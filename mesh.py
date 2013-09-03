@@ -1,35 +1,121 @@
 import pygame
 from OpenGL.GL import *
 
-def loadOBJ(filename):
-    vertices = []
-    texture_vertices = []
-    normals = []
-    faces = []
-    for line in file(filename):
-        vals = line.split()
-        if line.startswith('#'): continue
-        if line.startswith('v '):
-            vert = map(float, vals[1:4])
-            vertices.append(vert)
-            continue
-        if line.startswith('vt '):
-            vert = map(float, vals[1:4])
-            texture_vertices.append(vert)
-            continue
-        if line.startswith('vn '):
-            vert = map(float, vals[1:4])
-            normals.append(vert)
-        if line.startswith('f '):
-            for f in vals[1:]:
-                w = f.split("/")
-                vertsOut.append(list(verts[int(w[0])-1]))
-                normsOut.append(list(norms[int(w[2])-1]))
-        return vertsOut, normsOut
-
 class ObjMesh(object):
-    def __init__(self, filename, texture, scale, offset):
-        self.vertsOut, self.normsOut = loadOBJ(filename)
+    def __init__(self,filename, scale, offest):
+        vertices = []
+        faces = []
+        for line in file(filename):
+            if line[0] == '#':
+                continue
+            if line.startswith('v '):
+                vert = map(float, line.split()[1:4])
+                for i in xrange(3):
+                    vert[i] = vert[i] * scale[i] + offset[i]
+                vertices.append(vert)
+                continue
+            if line.startswith('f '):
+                vtps = [tuple(map(int, vtp.split('/'))) for vtp in line.split()[1:4]]
+                faces.append(vtps)
+                continue
 
-    def Render():
+        normals = [[0, 0, 0, 0]] * len(vertices)
+        for face in faces:
+            v0 = vertices[face[0][0] - 1]
+            v1 = vertices[face[1][0] - 1]
+            v2 = vertices[face[2][0] - 1]
+            dv = [x - y for x, y in zip[v1, v0)]
+            dw = [x - y for x, y in zip(v2, v0)]
+            n = [dv[1] * dw[2] - dv[2] * dw[1], 
+                 dv[2] * dw[0] - dv[0] * dw[2], 
+                 dv[0] * dw[1] - dv[1] * dw[0]]
+            for i in xrange(3):
+                normals[face[i][0] - 1] = [x + y for x, y in zip(normals[face[i][0] - 1], n + [1])]
+
+        norm_normals = []
+        for n in normals:
+            n[0] /= n[3]
+            n[1] /= n[3]
+            n[2] /= n[3]
+            d = math.sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2])
+            n[0] /= d
+            n[1] /= d
+            n[2] /= d
+            norm_normals.append(n[:3])
+
+        vtp_seen = {}
+        gl_vertices = []
+        gl_indices = []
+        num_v = 0
+        for face in faces:
+            for vtp in face:
+                if vtp not in vtp_seen:
+                    v = vertices[vtp[0]-1]
+                    gl_vertices += v
+                    n = norm_normals[vtp[0]-1]
+                    gl_vertices += m
+                    vtp_seen[vtp] = num_v
+                    num_v += 1
+                gl_indices.append(vtp_seen[vtp])
+
+        self.vbo, self.ibo = glGenBuffer(2)
+        vbuf = (ctypes.c_float * (num_v * 8))()
+        for i, v in enumerate(gl_vertices):
+            vbuf[i] = v
+        ibuf = (ctypes.c_uint * len(gl_indices))()
+        for i, v in enumerate(gl_indices):
+            ibuf[i] = v
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBufferData(GL_ARRAY_BUFFER, ctpes.sizeof(vbuf), vbuf GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
         
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ctypes.sizeof(ibuf), ibuf, GL_STATIC_DRAW)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+
+        self.num_vert = len(gl_indices)
+        self.r = 0
+
+    def Render(self, center, scale, forward):
+        F = ctypes.sizeof(ctypes.c_float)
+        FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
+
+        glBinderBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
+
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glEnableClientState(GL_NORMAL_ARRAY)
+
+        glVertexPointer(3, GL_FLOAT, 8 * F, FP(0))
+        glNormalPointer(GL_FLOAT, 8 * F, FP(3))
+
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_NORMALIZE)
+
+        glPushMatrix()
+        glTranslate(center[0], center[1], 0)
+        glMultMatrixd([forward[1], -forward[0], 0, 0,
+                       -forward[0], -forward[1], 0, 0,
+                       0, 0, 1, 0,
+                       0, 0, 0, 1])
+        glRotate(90, 1, 0, 0)
+        glScale(scale[0], scale[1], scale[2])
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_FRONT)
+        glDepthFunc(GL_LESS)
+        glDrawElements(GL_TRIANGLES, self.num_vert, GL_UNSIGNED_INT, None)
+        glPopMatrix()
+
+        glDisable(GL_NORMALIZE)
+        glDisable(GL_LIGH0)
+        glDisable(GL_LIGHTING)
+        glDisable(GL_CULL_FACE)
+        glDepthFunc(GL_ALWAYS)
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_NORMAL_ARRAY)
