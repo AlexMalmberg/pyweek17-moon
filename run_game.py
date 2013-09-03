@@ -9,6 +9,7 @@ import game
 
 def main():
   pygame.init()
+  x = 1
 
   width, height = 960, 600
   flags = pygame.OPENGL | pygame.DOUBLEBUF | pygame.HWSURFACE
