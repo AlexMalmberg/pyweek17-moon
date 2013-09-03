@@ -4,9 +4,8 @@ import numpy
 
 
 class Lightmap(object):
-  def __init__(self, level, oversample):
+  def __init__(self, level):
     self.level = level
-    self.oversample = oversample
     self.width, self.height = level.heightdim
     self.heightmap = numpy.fromstring(level.heightmap, dtype=numpy.uint8)
     self.heightmap.shape = (self.height, self.width)
@@ -30,7 +29,6 @@ class Lightmap(object):
     self.partial = numpy.zeros((self.dim, ))
 
     self.secondary /= abs(self.primary)
-    self.secondary *= self.oversample
     self.dz = dz / abs(self.primary)
     self.primary = math.copysign(1, self.primary)
     self.progress = 0
