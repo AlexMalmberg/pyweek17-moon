@@ -39,6 +39,8 @@ def main():
     #f.close()
   #print light.lightmap
   print 'c'
+  while True:
+    x = 1
 
 
 if __name__ == '__main__':
