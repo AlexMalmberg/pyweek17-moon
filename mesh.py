@@ -1,10 +1,12 @@
 import pygame
+import math
 from OpenGL.GL import *
 
 class ObjMesh(object):
-    def __init__(self,filename, scale, offest):
+    def __init__(self,filename, scale, offset):
         vertices = []
         faces = []
+        norm_normals = []
         for line in file(filename):
             if line[0] == '#':
                 continue
@@ -14,34 +16,38 @@ class ObjMesh(object):
                     vert[i] = vert[i] * scale[i] + offset[i]
                 vertices.append(vert)
                 continue
+            if line.startswith('vn '):
+                vert = map(float, line.split()[1:4])
+                norm_normals.append(vert)
             if line.startswith('f '):
                 vtps = [tuple(map(int, vtp.split('/'))) for vtp in line.split()[1:4]]
                 faces.append(vtps)
                 continue
 
-        normals = [[0, 0, 0, 0]] * len(vertices)
-        for face in faces:
-            v0 = vertices[face[0][0] - 1]
-            v1 = vertices[face[1][0] - 1]
-            v2 = vertices[face[2][0] - 1]
-            dv = [x - y for x, y in zip[v1, v0)]
-            dw = [x - y for x, y in zip(v2, v0)]
-            n = [dv[1] * dw[2] - dv[2] * dw[1], 
-                 dv[2] * dw[0] - dv[0] * dw[2], 
-                 dv[0] * dw[1] - dv[1] * dw[0]]
-            for i in xrange(3):
-                normals[face[i][0] - 1] = [x + y for x, y in zip(normals[face[i][0] - 1], n + [1])]
+        #normals = [[0, 0, 0, 0]] * len(vertices)
+        #for face in faces:
+            #v0 = vertices[face[0][0] - 1]
+            #v1 = vertices[face[1][0] - 1]
+            #v2 = vertices[face[2][0] - 1]
+            #dv = [x - y for x, y in zip(v1, v0)]
+            #dw = [x - y for x, y in zip(v2, v0)]
+            #n = [dv[1] * dw[2] - dv[2] * dw[1], 
+            #     dv[2] * dw[0] - dv[0] * dw[2], 
+            #     dv[0] * dw[1] - dv[1] * dw[0]]
+            #for i in xrange(3):
+            #    normals[face[i][0] - 1] = [
+            #        x + y for x, y in zip(normals[face[i][0] - 1], n + [1])]
 
-        norm_normals = []
-        for n in normals:
-            n[0] /= n[3]
-            n[1] /= n[3]
-            n[2] /= n[3]
-            d = math.sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2])
-            n[0] /= d
-            n[1] /= d
-            n[2] /= d
-            norm_normals.append(n[:3])
+        #norm_normals = []
+        #for n in normals:
+        #    n[0] /= n[3]
+        #    n[1] /= n[3]
+        #    n[2] /= n[3]
+        #    d = math.sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2])
+        #    n[0] /= d
+        #    n[1] /= d
+        #    n[2] /= d
+        #    norm_normals.append(n[:3])
 
         vtp_seen = {}
         gl_vertices = []
@@ -52,13 +58,14 @@ class ObjMesh(object):
                 if vtp not in vtp_seen:
                     v = vertices[vtp[0]-1]
                     gl_vertices += v
-                    n = norm_normals[vtp[0]-1]
-                    gl_vertices += m
+                    #n = norm_normals[vtp[0]-1]
+                    #n = norm_normals[num_v]
+                    #gl_vertices += n
                     vtp_seen[vtp] = num_v
                     num_v += 1
                 gl_indices.append(vtp_seen[vtp])
 
-        self.vbo, self.ibo = glGenBuffer(2)
+        self.vbo, self.ibo, self.vnbo = glGenBuffers(3)
         vbuf = (ctypes.c_float * (num_v * 8))()
         for i, v in enumerate(gl_vertices):
             vbuf[i] = v
@@ -67,7 +74,7 @@ class ObjMesh(object):
             ibuf[i] = v
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, ctpes.sizeof(vbuf), vbuf GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, ctypes.sizeof(vbuf), vbuf, GL_STATIC_DRAW)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
@@ -81,7 +88,7 @@ class ObjMesh(object):
         F = ctypes.sizeof(ctypes.c_float)
         FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
 
-        glBinderBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
 
         glEnableClientState(GL_VERTEX_ARRAY)
@@ -109,7 +116,7 @@ class ObjMesh(object):
         glPopMatrix()
 
         glDisable(GL_NORMALIZE)
-        glDisable(GL_LIGH0)
+        glDisable(GL_LIGHT0)
         glDisable(GL_LIGHTING)
         glDisable(GL_CULL_FACE)
         glDepthFunc(GL_ALWAYS)
