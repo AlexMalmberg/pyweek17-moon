@@ -34,48 +34,65 @@ class Level(object):
     v = v[:]
     v[0] *= self.collisionscale[0]
     v[1] *= self.collisionscale[1]
-    stop = 1.0
 
-    # Check x-crossings.
-    if v[0] > 0:
-      start = int(math.ceil(p[0]))
-      end = int(p[0] + v[0]) + 1
-      d = 1
-      o = 0
+    for xadj in (0, -0.1, 0.1):
+      for yadj in (0, -0.1, 0.1):
+        x = int(p[0] + xadj)
+        y = int(p[1] + yadj)
+        if not self.CollisionMap(x, y):
+          break
+      else:
+        continue
+      break
+
+    dst_x = int(p[0] + v[0])
+    dst_y = int(p[1] + v[1])
+    #print ('p=%0.2f, %0.2f, xy = %i, %i, dst=%0.2f, %0.2f, dst_xy=%i, %i'
+    #       % (p[0], p[1], x, y, p[0] + v[0], p[1] + v[1], dst_x, dst_y))
+
+    # TODO(alex): this is seriously ugly. if there's time, switch to
+    # geometry based approach
+    if x < dst_x:
+      while x < dst_x:
+        if self.CollisionMap(x + 1, y):
+          break
+        x += 1
+      cx = x
+      if x == dst_x:
+        x = p[0] + v[0]
+      else:
+        x = x + 1
+    elif x > dst_x:
+      while x > dst_x:
+        if self.CollisionMap(x - 1, y):
+          break
+        x -= 1
+      cx = x
+      if x == dst_x:
+        x = p[0] + v[0]
     else:
-      start = int(math.floor(p[0]))
-      end = int(p[0] + v[0])
-      d = -1
-      o = -1
-    for x in xrange(start, end, d):
-      t = (x - p[0]) / v[0]
-      y = int(p[1] + t * v[1])
-      if self.CollisionMap(x + o, y):
-        stop = t
-        break
+      cx = x
+      x = p[0] + v[0]
 
-    # Check y-crossings.
-    if v[1] > 0:
-      start = int(math.ceil(p[1]))
-      end = int(p[1] + v[1]) + 1
-      d = 1
-      o = 0
+    if y < dst_y:
+      while y < dst_y:
+        if self.CollisionMap(cx, y + 1):
+          break
+        y += 1
+      if y == dst_y:
+        y = p[1] + v[1]
+      else:
+        y = y + 1
+    elif y > dst_y:
+      while y > dst_y:
+        if self.CollisionMap(cx, y - 1):
+          break
+        y -= 1
+      if y == dst_y:
+        y = p[1] + v[1]
     else:
-      start = int(math.floor(p[1]))
-      end = int(p[1] + v[1])
-      d = -1
-      o = -1
-    for y in xrange(start, end, d):
-      t = (y - p[1]) / v[1]
-      if t > stop:
-        break
-      x = int(p[0] + t * v[0])
-      if self.CollisionMap(x, y + o):
-        stop = t
-        break
+      y = p[1] + v[1]
 
-    p[0] += v[0] * stop
-    p[1] += v[1] * stop
-    p[0] /= self.collisionscale[0]
-    p[1] /= self.collisionscale[1]
+    p[0] = x / self.collisionscale[0]
+    p[1] = y / self.collisionscale[1]
     return p
