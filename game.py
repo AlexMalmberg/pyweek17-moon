@@ -74,7 +74,7 @@ class Moon(object):
     self.dz = raw_moon['dz']
     self.color = map(float, raw_moon['color'])
 
-    self.update_interval = 2.0
+    self.update_interval = 0.25
 
     self.lightmaps = [lightmap.Lightmap(level, texture_ids[0]),
                       lightmap.Lightmap(level, texture_ids[1]),
@@ -117,6 +117,11 @@ class Moon(object):
 
 
 class Game(object):
+  NOT_DONE = 0
+  ABORTED = 1
+  VICTORY = 2
+  DEFEAT = 3
+
   def __init__(self, render, mission):
     print 'Game.__init__'
     self.render = render
@@ -128,7 +133,7 @@ class Game(object):
       texture_ids = render.LightmapTextureIds(len(self.moons))
       self.moons.append(Moon(m, self.level, texture_ids))
 
-    #self.texture = render.LoadTexture('data/test_map/texture2.png')
+    self.texture = render.LoadTexture('data/test_map/texture1.png')
 
     self.hack_meshes = []
     self.hack_meshes.append(Cube(290, 644, 587, 867, 102))
@@ -140,18 +145,25 @@ class Game(object):
       if (e.type == pygame.QUIT
           or (e.type == pygame.KEYDOWN
               and e.key in (pygame.K_ESCAPE, pygame.K_q))):
-        return True
+        self.done = self.ABORTED
+        return
+
     pressed = pygame.key.get_pressed()
-    speed = 120.
+    delta = [0, 0]
     if pressed[pygame.K_UP]:
-      self.player.position[1] += dt * speed
+      delta[1] = 1
     if pressed[pygame.K_DOWN]:
-      self.player.position[1] -= dt * speed
+      delta[1] = -1
     if pressed[pygame.K_LEFT]:
-      self.player.position[0] -= dt * speed
+      delta[0] = -1
     if pressed[pygame.K_RIGHT]:
-      self.player.position[0] += dt * speed
-    return False
+      delta[0] = 1
+
+    if delta[0] or delta[1]:
+      speed = 120.
+      delta[0] *= dt * speed
+      delta[1] *= dt * speed
+      self.player.position = self.level.Move(self.player.position, delta)
 
   def Update(self, t, dt):
     for m in self.moons:
@@ -161,12 +173,12 @@ class Game(object):
     GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
     self.render.SetupProjection(
-      self.player.position[0], self.player.position[1], 400)
+      self.player.position[0], self.player.position[1], 700)
 
     m = self.moons[0]
 
     GL.glEnable(GL.GL_TEXTURE_2D)
-    #GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+    GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
     GL.glColor(0.7, 0.7, 0.7)
     GL.glBegin(GL.GL_QUADS)
     GL.glTexCoord(0, 0)
@@ -183,7 +195,10 @@ class Game(object):
     GL.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA)
 
     GL.glBindTexture(GL.GL_TEXTURE_2D, m.lightmaps[m.active_lightmap].id)
-    GL.glColor(0, 0, 0, 1 - m.blend)
+    if True:
+      GL.glColor(0, 0, 0, 1 - m.blend)
+    else:
+      GL.glColor(0, 0, 0, 1)
     GL.glBegin(GL.GL_QUADS)
     GL.glTexCoord(0, 0)
     GL.glVertex(0, 0)
@@ -195,20 +210,21 @@ class Game(object):
     GL.glVertex(0, 2048)
     GL.glEnd()
 
-    GL.glBindTexture(GL.GL_TEXTURE_2D, m.lightmaps[m.next_lightmap].id)
-    GL.glColor(0, 0, 0, m.blend)
-    GL.glBegin(GL.GL_QUADS)
-    GL.glTexCoord(0, 0)
-    GL.glVertex(0, 0)
-    GL.glTexCoord(1, 0)
-    GL.glVertex(2048, 0)
-    GL.glTexCoord(1, 1)
-    GL.glVertex(2048, 2048)
-    GL.glTexCoord(0, 1)
-    GL.glVertex(0, 2048)
-    GL.glEnd()
+    if True:
+      GL.glBindTexture(GL.GL_TEXTURE_2D, m.lightmaps[m.next_lightmap].id)
+      GL.glColor(0, 0, 0, m.blend)
+      GL.glBegin(GL.GL_QUADS)
+      GL.glTexCoord(0, 0)
+      GL.glVertex(0, 0)
+      GL.glTexCoord(1, 0)
+      GL.glVertex(2048, 0)
+      GL.glTexCoord(1, 1)
+      GL.glVertex(2048, 2048)
+      GL.glTexCoord(0, 1)
+      GL.glVertex(0, 2048)
+      GL.glEnd()
+
     GL.glDisable(GL.GL_BLEND)
-
     GL.glDisable(GL.GL_TEXTURE_2D)
 
     for hm in self.hack_meshes:
@@ -221,11 +237,12 @@ class Game(object):
   def Run(self):
     clock = pygame.time.Clock()
     t = 0
+    self.done = self.NOT_DONE
 
     debug_interval = 2.0
     next_debug = 0.0
 
-    while True:
+    while self.done == self.NOT_DONE:
       if t > next_debug:
         print clock
         next_debug += debug_interval
@@ -233,7 +250,8 @@ class Game(object):
       dt = clock.tick() * 0.001
       t += dt
 
-      if self.HandleInput(dt):
-        break
+      self.HandleInput(dt)
       self.Update(t, dt)
       self.Render(t)
+
+    return self.done
