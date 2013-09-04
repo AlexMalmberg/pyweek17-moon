@@ -1,7 +1,7 @@
 {
     "level_path": "data/test_map/",
 
-    "player_start": [1024, 1024],
+    "player_start": [1024, 900],
 
     "moons": [
         {
