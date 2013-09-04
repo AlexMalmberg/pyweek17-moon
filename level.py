@@ -19,4 +19,7 @@ class Level(object):
     pass
 
   def Move(self, p, v):
-    pass
+    r = p
+    r[0] += v[0]
+    r[1] += v[1]
+    return r
