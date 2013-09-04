@@ -6,9 +6,8 @@ from OpenGL.GL import *
 
 class Lightmap(object):
   def __init__(self, level, texture_id):
-    self.width, self.height = level.heightdim
-    self.heightmap = numpy.fromstring(level.heightmap, dtype=numpy.uint8)
-    self.heightmap.shape = (self.height, self.width)
+    self.heightmap = level.heightmap
+    self.height, self.width = self.heightmap.shape
     self.lightmap = numpy.zeros((self.height, self.width), dtype=numpy.uint8)
 
     self.id = texture_id
