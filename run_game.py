@@ -24,7 +24,8 @@ def main():
 
   m = mission.Mission('data/c0_m0.txt')
   g = game.Game(render, m)
-  g.Run()
+  result = g.Run()
+  print 'result: %i' % result
 
 
 if __name__ == '__main__':
