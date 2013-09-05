@@ -1,14 +1,26 @@
 {
     "level_path": "data/test_map/",
 
-    "player_start": [1024, 900],
+    "player_start": [1400, 1100],
 
     "moons": [
         {
             "color": [1, 0, 0],
+            "strength": 0.8,
             "angle": 0,
             "angle_speed": 0.0349,
             "dz": 0.2
+        }
+    ],
+
+    "targets": [
+        {
+            "position": [650, 600],
+            "range": 20
+        },
+        {
+            "position": [1800, 1800],
+            "range": 20
         }
     ]
 }
