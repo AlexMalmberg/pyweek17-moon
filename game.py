@@ -9,9 +9,10 @@ import lightmap
 class Player(object):
   def __init__(self, position):
     self.position = position
+    self.light = 0
 
   def Render(self):
-    GL.glColor(0.3, 1, 0.3)
+    GL.glColor(self.light, 1, 0.0)
     GL.glBegin(GL.GL_QUADS)
     GL.glVertex(self.position[0] - 8, self.position[1] - 8)
     GL.glVertex(self.position[0] + 8, self.position[1] - 8)
@@ -72,6 +73,7 @@ class Moon(object):
     self.angle = raw_moon['angle']
     self.angle_speed = raw_moon['angle_speed']
     self.dz = raw_moon['dz']
+    self.strength = raw_moon['strength']
     self.color = map(float, raw_moon['color'])
 
     self.update_interval = 0.25
@@ -101,7 +103,8 @@ class Moon(object):
 
   def Update(self, t):
     if t > self.next_update:
-      # TODO(alex): properly skip time forward if we miss an update
+      # TODO(alex): properly skip time forward if we miss an
+      # update. lopri since dt is capped
       while t > self.next_update:
         self.next_update += self.update_interval
       self.lightmaps[self.in_progress_lightmap].FinishCalculation()
@@ -114,6 +117,41 @@ class Moon(object):
     self.blend = ((t - self.next_update + self.update_interval)
                   / self.update_interval)
     self.lightmaps[self.in_progress_lightmap].UpdateCalculation(self.blend)
+
+  def LightAtPosition(self, pos):
+    x = int(pos[0] / 2048. * self.lightmaps[0].width)
+    y = int(pos[1] / 2048. * self.lightmaps[1].width)
+    if self.lightmaps[self.active_lightmap].lightmap[y][x] > 0:
+      l0 = 0
+    else:
+      l0 = 1
+    if self.lightmaps[self.next_lightmap].lightmap[y][x] > 0:
+      l1 = 0
+    else:
+      l1 = 1
+    l = l0 * (1 - self.blend) + l1 * self.blend
+    return l * self.strength
+
+
+class Target(object):
+  def __init__(self, raw_target):
+    self.position = map(float, raw_target['position'])
+    self.range = float(raw_target['range'])
+
+  def CloseEnough(self, pos):
+    dx = self.position[0] - pos[0]
+    dy = self.position[1] - pos[1]
+    return math.hypot(dx, dy) < self.range
+
+  def Render(self, t):
+    t = abs(math.fmod(t, 3) - 1.5) / 1.5
+    GL.glColor(t, t, 1.0)
+    GL.glBegin(GL.GL_QUADS)
+    GL.glVertex(self.position[0] - self.range, self.position[1] - self.range)
+    GL.glVertex(self.position[0] + self.range, self.position[1] - self.range)
+    GL.glVertex(self.position[0] + self.range, self.position[1] + self.range)
+    GL.glVertex(self.position[0] - self.range, self.position[1] + self.range)
+    GL.glEnd()
 
 
 class Game(object):
@@ -132,6 +170,12 @@ class Game(object):
     for m in mission.moons:
       texture_ids = render.LightmapTextureIds(len(self.moons))
       self.moons.append(Moon(m, self.level, texture_ids))
+
+    self.targets = []
+    for t in mission.targets:
+      self.targets.append(Target(t))
+    self.active_target_index = 0
+    self.active_target = self.targets[0]
 
     self.texture = render.LoadTexture('data/test_map/texture1.png')
 
@@ -165,9 +209,31 @@ class Game(object):
       delta[1] *= dt * speed
       self.player.position = self.level.Move(self.player.position, delta)
 
+  def LightAtPosition(self, pos):
+    l = 0
+    for m in self.moons:
+      l += m.LightAtPosition(pos)
+    return l
+
   def Update(self, t, dt):
     for m in self.moons:
       m.Update(t)
+
+    light = self.LightAtPosition(self.player.position)
+    if light > 0:
+      self.player.light += dt * light / 1.0
+      if self.player.light >= 1:
+        self.done = self.DEFEAT
+    else:
+      self.player.light = 0
+
+    if not self.done and self.active_target.CloseEnough(self.player.position):
+      print 'trigger %i' % self.active_target_index
+      self.active_target_index += 1
+      if self.active_target_index == len(self.targets):
+        self.done = self.VICTORY
+      else:
+        self.active_target = self.targets[self.active_target_index]
 
   def Render(self, t):
     GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
@@ -231,6 +297,7 @@ class Game(object):
       hm.Render()
 
     self.player.Render()
+    self.active_target.Render(t)
 
     pygame.display.flip()
 
@@ -248,6 +315,8 @@ class Game(object):
         next_debug += debug_interval
 
       dt = clock.tick() * 0.001
+      if dt > 0.1:
+        dt = 0.1
       t += dt
 
       self.HandleInput(dt)
