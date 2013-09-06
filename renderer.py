@@ -1,5 +1,11 @@
+import math
 import pygame
 from OpenGL.GL import *
+
+
+def Normalize(v):
+  d = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+  return (v[0] / d, v[1] / d, v[2] / d)
 
 
 def CompileShader(src, kind):
@@ -31,6 +37,7 @@ def CompileProgram(vsrc, fsrc):
 moonlight_vshader = """
 #version 110
 
+varying vec3 normal;
 varying vec4 position;
 varying vec2 texcoord;
 
@@ -38,12 +45,14 @@ void main() {
   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
   position = gl_Vertex;
   texcoord = gl_MultiTexCoord0.st;
+  normal = gl_Normal;
 }
 """
 
 moonlight_fshader = """
 #version 110
 
+varying vec3 normal;
 varying vec4 position;
 varying vec2 texcoord;
 
@@ -52,6 +61,7 @@ uniform sampler2D tex;
 uniform vec4 ambient;
 
 uniform float moon1_blend;
+uniform vec3 moon1_dir;
 uniform vec4 moon1_color;
 uniform sampler2D moon1_1, moon1_2;
 
@@ -67,7 +77,9 @@ void main() {
   float light2 = texture2D(moon1_2, light_pos.xy).a * 255.;
   light2 = 1. - clamp((light2 - position.z) * 0.4, 0., 1.);
 
-  light += moon1_color * mix(light1, light2, moon1_blend);
+  float d = clamp(dot(normal, moon1_dir), 0., 1.);
+
+  light += moon1_color * mix(light1, light2, moon1_blend) * d;
 
   gl_FragColor = color * light;
 }
@@ -152,6 +164,10 @@ class Render(object):
 
     loc = glGetUniformLocation(prg, 'moon1_blend')
     glUniform1f(loc, m.blend)
+
+    loc = glGetUniformLocation(prg, 'moon1_dir')
+    v = Normalize(m.vector)
+    glUniform3f(loc, *v)
 
     loc = glGetUniformLocation(prg, 'moon1_color')
     glUniform4f(loc, m.color[0], m.color[1], m.color[2], 1.0)
