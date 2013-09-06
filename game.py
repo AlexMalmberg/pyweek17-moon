@@ -33,31 +33,31 @@ class Cube(object):
     GL.glEnable(GL.GL_DEPTH_TEST)
     GL.glBegin(GL.GL_QUADS)
 
-    GL.glColor(0.2, 0.2, 0.8)
+    GL.glNormal(0, -1, 0)
     GL.glVertex(self.x0, self.y0, 0)
     GL.glVertex(self.x1, self.y0, 0)
     GL.glVertex(self.x1, self.y0, self.h)
     GL.glVertex(self.x0, self.y0, self.h)
 
-    GL.glColor(0.2, 0.2, 0.7)
+    GL.glNormal(-1, 0, 0)
     GL.glVertex(self.x1, self.y0, 0)
     GL.glVertex(self.x1, self.y1, 0)
     GL.glVertex(self.x1, self.y1, self.h)
     GL.glVertex(self.x1, self.y0, self.h)
 
-    GL.glColor(0.2, 0.2, 0.6)
+    GL.glNormal(0, 1, 0)
     GL.glVertex(self.x1, self.y1, 0)
     GL.glVertex(self.x0, self.y1, 0)
     GL.glVertex(self.x0, self.y1, self.h)
     GL.glVertex(self.x1, self.y1, self.h)
 
-    GL.glColor(0.2, 0.2, 0.5)
+    GL.glNormal(1, 0, 0)
     GL.glVertex(self.x0, self.y1, 0)
     GL.glVertex(self.x0, self.y0, 0)
     GL.glVertex(self.x0, self.y0, self.h)
     GL.glVertex(self.x0, self.y1, self.h)
 
-    GL.glColor(0.3, 0.3, 1.0)
+    GL.glNormal(0, 0, 1)
     GL.glVertex(self.x0, self.y0, self.h)
     GL.glVertex(self.x1, self.y0, self.h)
     GL.glVertex(self.x1, self.y1, self.h)
@@ -96,6 +96,7 @@ class Moon(object):
     self.next_lightmap = 1
     self.in_progress_lightmap = 2
     self.next_update = self.update_interval
+    self.vector = self._VectorAtTime(0)
 
   def _VectorAtTime(self, t):
     a = self.angle + self.angle_speed * t
@@ -114,6 +115,7 @@ class Moon(object):
       self.lightmaps[self.in_progress_lightmap].StartCalculation(
         *self._VectorAtTime(self.next_update + self.update_interval))
 
+    self.vector = self._VectorAtTime(t)
     self.blend = ((t - self.next_update + self.update_interval)
                   / self.update_interval)
     self.lightmaps[self.in_progress_lightmap].UpdateCalculation(self.blend)
