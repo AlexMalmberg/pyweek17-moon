@@ -177,7 +177,7 @@ class Game(object):
     self.active_target_index = 0
     self.active_target = self.targets[0]
 
-    #self.texture = render.LoadTexture('data/test_map/texture1.png')
+    self.texture = render.LoadTexture('data/test_map/texture1.png')
 
     self.hack_meshes = []
     self.hack_meshes.append(Cube(290, 644, 587, 867, 102))
@@ -244,7 +244,11 @@ class Game(object):
     m = self.moons[0]
 
     GL.glEnable(GL.GL_TEXTURE_2D)
-    #GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+    self.render.SetMoonlightShader((0.4, 0.4, 0.4, 1.0), self.moons)
+
+    GL.glActiveTexture(GL.GL_TEXTURE0)
+    GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+
     GL.glColor(0.7, 0.7, 0.7)
     GL.glBegin(GL.GL_QUADS)
     GL.glTexCoord(0, 0)
@@ -256,41 +260,8 @@ class Game(object):
     GL.glTexCoord(0, 1)
     GL.glVertex(0, 2048)
     GL.glEnd()
+    GL.glUseProgram(0)
 
-    GL.glEnable(GL.GL_BLEND)
-    GL.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA)
-
-    GL.glBindTexture(GL.GL_TEXTURE_2D, m.lightmaps[m.active_lightmap].id)
-    if True:
-      GL.glColor(0, 0, 0, 1 - m.blend)
-    else:
-      GL.glColor(0, 0, 0, 1)
-    GL.glBegin(GL.GL_QUADS)
-    GL.glTexCoord(0, 0)
-    GL.glVertex(0, 0)
-    GL.glTexCoord(1, 0)
-    GL.glVertex(2048, 0)
-    GL.glTexCoord(1, 1)
-    GL.glVertex(2048, 2048)
-    GL.glTexCoord(0, 1)
-    GL.glVertex(0, 2048)
-    GL.glEnd()
-
-    if True:
-      GL.glBindTexture(GL.GL_TEXTURE_2D, m.lightmaps[m.next_lightmap].id)
-      GL.glColor(0, 0, 0, m.blend)
-      GL.glBegin(GL.GL_QUADS)
-      GL.glTexCoord(0, 0)
-      GL.glVertex(0, 0)
-      GL.glTexCoord(1, 0)
-      GL.glVertex(2048, 0)
-      GL.glTexCoord(1, 1)
-      GL.glVertex(2048, 2048)
-      GL.glTexCoord(0, 1)
-      GL.glVertex(0, 2048)
-      GL.glEnd()
-
-    GL.glDisable(GL.GL_BLEND)
     GL.glDisable(GL.GL_TEXTURE_2D)
 
     for hm in self.hack_meshes:
