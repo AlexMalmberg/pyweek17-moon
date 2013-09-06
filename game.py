@@ -179,7 +179,8 @@ class Game(object):
     self.active_target_index = 0
     self.active_target = self.targets[0]
 
-    self.texture = render.LoadTexture('data/test_map/texture1.png')
+    self.texture = render.white_texture
+    #self.texture = render.LoadTexture('data/test_map/texture1.png')
 
     self.hack_meshes = []
     self.hack_meshes.append(Cube(288, 640, 589, 871, 102))
@@ -255,7 +256,6 @@ class Game(object):
     self.render.SetMoonlightShader((0.4, 0.4, 0.4, 1.0), self.moons)
 
     GL.glActiveTexture(GL.GL_TEXTURE0)
-    #GL.glBindTexture(GL.GL_TEXTURE_2D, render.white_texture)
     GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
 
     GL.glColor(0.7, 0.7, 0.7)
