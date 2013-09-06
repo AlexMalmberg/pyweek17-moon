@@ -120,7 +120,7 @@ class Moon(object):
 
   def LightAtPosition(self, pos):
     x = int(pos[0] / 2048. * self.lightmaps[0].width)
-    y = int(pos[1] / 2048. * self.lightmaps[1].width)
+    y = int(pos[1] / 2048. * self.lightmaps[0].height)
     if self.lightmaps[self.active_lightmap].lightmap[y][x] > 0:
       l0 = 0
     else:
@@ -180,9 +180,9 @@ class Game(object):
     self.texture = render.LoadTexture('data/test_map/texture1.png')
 
     self.hack_meshes = []
-    self.hack_meshes.append(Cube(290, 644, 587, 867, 102))
-    self.hack_meshes.append(Cube(887, 745, 1334, 1027, 102))
-    self.hack_meshes.append(Cube(827, 291, 1400, 622, 108))
+    self.hack_meshes.append(Cube(288, 640, 589, 871, 102))
+    self.hack_meshes.append(Cube(887, 745, 1338, 1034, 102))
+    self.hack_meshes.append(Cube(822, 287, 1404, 626, 110))
 
   def HandleInput(self, dt):
     for e in pygame.event.get():
@@ -219,11 +219,17 @@ class Game(object):
     for m in self.moons:
       m.Update(t)
 
+    #if True:
+    #  x, y = 292, 2048 - 868
+    #  x = int(x / 2048. * m.lightmaps[0].width)
+    #  y = int(y / 2048. * m.lightmaps[0].height)
+    #  print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
+
     light = self.LightAtPosition(self.player.position)
     if light > 0:
       self.player.light += dt * light / 1.0
-      if self.player.light >= 1:
-        self.done = self.DEFEAT
+      #if self.player.light >= 1:
+      #  self.done = self.DEFEAT
     else:
       self.player.light = 0
 
@@ -247,6 +253,7 @@ class Game(object):
     self.render.SetMoonlightShader((0.4, 0.4, 0.4, 1.0), self.moons)
 
     GL.glActiveTexture(GL.GL_TEXTURE0)
+    #GL.glBindTexture(GL.GL_TEXTURE_2D, render.white_texture)
     GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
 
     GL.glColor(0.7, 0.7, 0.7)
@@ -260,12 +267,14 @@ class Game(object):
     GL.glTexCoord(0, 1)
     GL.glVertex(0, 2048)
     GL.glEnd()
-    GL.glUseProgram(0)
 
-    GL.glDisable(GL.GL_TEXTURE_2D)
+    GL.glBindTexture(GL.GL_TEXTURE_2D, self.render.white_texture)
 
     for hm in self.hack_meshes:
       hm.Render()
+
+    GL.glUseProgram(0)
+    GL.glDisable(GL.GL_TEXTURE_2D)
 
     self.player.Render()
     self.active_target.Render(t)

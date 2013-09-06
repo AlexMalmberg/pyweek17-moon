@@ -61,11 +61,11 @@ void main() {
 
   vec4 light = ambient;
 
-  float light1 = texture2D(moon1_1, light_pos.xy).a;
-  light1 = 1. - clamp(light1 * 20., 0., 1.);
+  float light1 = texture2D(moon1_1, light_pos.xy).a * 255.;
+  light1 = 1. - clamp((light1 - position.z) * 0.4, 0., 1.);
 
-  float light2 = texture2D(moon1_2, light_pos.xy).a;
-  light2 = 1. - clamp(light2 * 20., 0., 1.);
+  float light2 = texture2D(moon1_2, light_pos.xy).a * 255.;
+  light2 = 1. - clamp((light2 - position.z) * 0.4, 0., 1.);
 
   light += moon1_color * mix(light1, light2, moon1_blend);
 
@@ -90,6 +90,24 @@ class Render(object):
 
     self.moonlight_program = CompileProgram(
       moonlight_vshader, moonlight_fshader)
+
+    self.black_texture = self._MakeSimpleTexture(0)
+    self.white_texture = self._MakeSimpleTexture(255)
+
+  def _MakeSimpleTexture(self, value):
+    id = glGenTextures(1)
+    data = chr(value) * 4
+    glBindTexture(GL_TEXTURE_2D, id)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_NEAREST)
+    glTexParameter(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
+    glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, data)
+    return id
 
   def SetupProjection(self, x, y, height):
     glMatrixMode(GL_PROJECTION)
