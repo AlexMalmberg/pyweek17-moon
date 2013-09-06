@@ -5,11 +5,11 @@
 
     "moons": [
         {
-            "color": [0.3, 0.3, 0.5],
+            "color": [0.6, 0.6, 1.0],
             "strength": 0.8,
             "angle": 0,
             "angle_speed": 0.0349,
-            "dz": 0.5
+            "dz": 0.2
         }
     ],
 
