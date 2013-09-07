@@ -14,7 +14,7 @@ def main():
   if len(sys.argv) > 1:
     radius = int(sys.argv)
   else:
-    radius = 4
+    radius = 6
 
   src = sys.stdin.read()
   dst = sys.stdout
