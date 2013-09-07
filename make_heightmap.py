@@ -26,8 +26,8 @@ varying vec4 position;
 void main() {
   gl_FragColor = vec4(
     position.z / 255.,
-    0, //position.x / 2048.,
-    0, //position.y / 2048.,
+    position.x / 2048.,
+    position.y / 2048.,
     0);
 }
 """

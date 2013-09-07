@@ -1,16 +1,15 @@
 {
-    "level_path": "data/c0/",
+    "level_path": "data/test_map/",
 
-    "player_start": [880, 848],
+    "player_start": [1400, 1100],
 
     "moons": [
         {
             "color": [0.6, 0.6, 1.0],
-            "ambient": 0.1,
             "strength": 0.8,
-            "angle": -1.22,
-            "angle_speed": -0.0349,
-            "dz": 1.5
+            "angle": 0,
+            "angle_speed": 0.0349,
+            "dz": 0.3
         }
     ],
 

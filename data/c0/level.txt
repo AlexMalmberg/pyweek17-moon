@@ -1,0 +1,14 @@
+{
+    "meshes": [
+        {
+            "obj_path": "data/model/cube.obj",
+            "center": [768.0, 848.0, 0.0],
+            "scale": [6.4, 4.8, 6.0]
+        },
+        {
+            "obj_path": "data/model/cube.obj",
+            "center": [832.0, 952.0, 0.0],
+            "scale": [16.0, 5.6, 12.0]
+        }
+    ]
+}

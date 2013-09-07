@@ -30,6 +30,10 @@ class Moon(object):
     self.dz = raw_moon['dz']
     self.strength = raw_moon['strength']
     self.color = map(float, raw_moon['color'])
+    if 'ambient' in raw_moon:
+      self.ambient = float(raw_moon['ambient'])
+    else:
+      self.ambient = 0
 
     self.update_interval = 0.25
 
@@ -169,11 +173,11 @@ class Game(object):
     for m in self.moons:
       m.Update(t)
 
-    #if True:
-    #  x, y = 292, 2048 - 868
-    #  x = int(x / 2048. * m.lightmaps[0].width)
-    #  y = int(y / 2048. * m.lightmaps[0].height)
-    #  print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
+    if False:
+      x, y = 438.0, 1293.0
+      x = int(x / 2048. * m.lightmaps[0].width)
+      y = int(y / 2048. * m.lightmaps[0].height)
+      print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
 
     light = self.LightAtPosition(self.player.position)
     if light > 0:

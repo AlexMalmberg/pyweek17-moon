@@ -40,14 +40,14 @@ class Mesh(object):
 
     glVertexPointer(3, GL_FLOAT, 8 * F, FP(0))
     glNormalPointer(GL_FLOAT, 8 * F, FP(3))
-    glTexCoordPointer(2, GL_FLOAT, 8 * F, FP(5))
+    glTexCoordPointer(2, GL_FLOAT, 8 * F, FP(6))
 
     glEnable(GL_NORMALIZE)
 
-    #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     glPushMatrix()
     glTranslate(center[0], center[1], center[2])
     glScale(scale[0], scale[1], scale[2])
+    glRotate(angle, 0, 0, 1)
     glEnable(GL_CULL_FACE)
     glCullFace(GL_BACK)
     glDrawElements(GL_TRIANGLES, self.num_idx, GL_UNSIGNED_INT, None)

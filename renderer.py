@@ -45,7 +45,7 @@ void main() {
   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
   position = gl_ModelViewMatrix * gl_Vertex;
   texcoord = gl_MultiTexCoord0.st;
-  normal = gl_Normal;
+  normal = normalize(gl_NormalMatrix * gl_Normal);
 }
 """
 
@@ -60,7 +60,7 @@ uniform sampler2D tex;
 
 uniform vec4 ambient;
 
-uniform float moon1_blend;
+uniform float moon1_blend, moon1_ambient;
 uniform vec3 moon1_dir;
 uniform vec4 moon1_color;
 uniform sampler2D moon1_1, moon1_2;
@@ -81,9 +81,12 @@ void main() {
   float light2 = texture2D(moon1_2, light_pos.xy).a * 255.;
   light2 = 1. - clamp((light2 - height) * 0.4, 0., 1.);
 
+  light1 = mix(light1, light2, moon1_blend);
+  light1 = clamp(light1 + moon1_ambient, 0., 1.);
+
   float d = clamp(dot(normal, moon1_dir), 0., 1.);
 
-  light += moon1_color * mix(light1, light2, moon1_blend) * d;
+  light += moon1_color * light1 * d;
 
   gl_FragColor = color * light;
 }
@@ -188,6 +191,9 @@ class Render(object):
 
     loc = glGetUniformLocation(prg, 'moon1_blend')
     glUniform1f(loc, m.blend)
+
+    loc = glGetUniformLocation(prg, 'moon1_ambient')
+    glUniform1f(loc, m.ambient)
 
     loc = glGetUniformLocation(prg, 'moon1_dir')
     v = Normalize(-m.vector[0], -m.vector[1], m.vector[2])
