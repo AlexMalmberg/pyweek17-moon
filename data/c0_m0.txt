@@ -1,0 +1,27 @@
+{
+    "level_path": "data/c0/",
+
+    "player_start": [880, 848],
+
+    "moons": [
+        {
+            "color": [0.6, 0.6, 1.0],
+            "ambient": 0.1,
+            "strength": 0.8,
+            "angle": -1.22,
+            "angle_speed": -0.0349,
+            "dz": 1.5
+        }
+    ],
+
+    "targets": [
+        {
+            "position": [650, 600],
+            "range": 20
+        },
+        {
+            "position": [1800, 1800],
+            "range": 20
+        }
+    ]
+}
