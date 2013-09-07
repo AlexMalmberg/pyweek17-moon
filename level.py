@@ -1,17 +1,45 @@
+import json
 import math
 import numpy
 import pygame
+from OpenGL import GL
+
+import mesh
+
+
+class LevelMesh(object):
+  def __init__(self, render, raw_mesh):
+    self.mesh = mesh.Mesh(raw_mesh['obj_path'])
+    if 'texture_path' in raw_mesh:
+      self.texture = render.LoadMeshTexture(raw_mesh['texture_path'])
+    else:
+      self.texture = render.white_texture
+    self.center = tuple(map(float, raw_mesh['center']))
+    if 'scale' in raw_mesh:
+      self.scale = tuple(map(float, raw_mesh['scale']))
+    else:
+      self.scale = (1, 1, 1)
+    if 'angle' in raw_mesh:
+      self.angle = float(raw_mesh['angle'])
+    else:
+      self.angle = 0
+
+  def Render(self):
+    GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+    self.mesh.Render(self.center, self.scale, self.angle)
 
 
 class Level(object):
-  def __init__(self, path):
+  def __init__(self, render, path):
+    self.render = render
+    self.raw = json.loads(file(path + '/level.txt').read())
+
     surface = pygame.image.load(path + '/height2.png')
     raw_heightmap = pygame.image.tostring(surface, 'P', 1)
     self.heightmap = numpy.fromstring(raw_heightmap, dtype=numpy.uint8)
     self.heightmap.shape = (surface.get_height(), surface.get_width())
 
     # TODO(alex): just build a coarse bsp tree of the geometry?
-    # TODO(alex): separate collision map
     surface = pygame.image.load(path + '/collision.png')
     raw_collisionmap = pygame.image.tostring(surface, 'P', 1)
     self.collisionmap = numpy.fromstring(raw_collisionmap, dtype=numpy.uint8)
@@ -19,10 +47,30 @@ class Level(object):
     self.collisionmap.shape = (h, w)
     self.collisionscale = [w / 2048., h / 2048.]
 
-    # texture(s)
+    self.texture_path = path + '/texture1.png'
+
+  def Setup(self):
+    self.texture = self.render.LoadGroundTexture(self.texture_path)
+    self.meshes = []
+    for raw_mesh in self.raw['meshes']:
+      self.meshes.append(LevelMesh(self.render, raw_mesh))
 
   def Render(self):
-    pass
+    GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+    GL.glBegin(GL.GL_QUADS)
+    GL.glNormal(0, 0, 1)
+    GL.glTexCoord(0, 0)
+    GL.glVertex(0, 0)
+    GL.glTexCoord(1, 0)
+    GL.glVertex(2048, 0)
+    GL.glTexCoord(1, 1)
+    GL.glVertex(2048, 2048)
+    GL.glTexCoord(0, 1)
+    GL.glVertex(0, 2048)
+    GL.glEnd()
+
+    for m in self.meshes:
+      m.Render()
 
   def CollisionMap(self, x, y):
     if x < 0 or y < 0:
