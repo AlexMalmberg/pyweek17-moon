@@ -1,0 +1,22 @@
+{
+	"level_path": "data/chapter/1/m1/",
+
+	"player_start": [100, 1900],
+
+	"moons": [
+		{
+			"color": [0.4, 0.4, 1.0],
+			"strength": 0.8,
+			"angle": 0,
+			"angle_speed": 0.0349,
+			"dz": 0.2
+		}
+	],
+
+	"targets": [
+		{
+			"position": [1950, 20],
+			"range": 20
+		}
+	]
+}

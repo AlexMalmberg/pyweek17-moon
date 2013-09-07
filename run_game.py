@@ -22,7 +22,7 @@ def main():
 
   render = renderer.Render(screen)
 
-  m = mission.Mission('data/c0_m0.txt')
+  m = mission.Mission('data/c1_m0.txt')
   g = game.Game(render, m)
   result = g.Run()
   print 'result: %i' % result
