@@ -1,7 +1,6 @@
 import ctypes
 import pygame
 import sys
-import time
 from OpenGL.GL import *
 
 import level
@@ -72,7 +71,6 @@ def main():
 
       lvl.Render()
       pygame.display.flip()
-      time.sleep(1)
 
       buf = ctypes.create_string_buffer(chunk[0] * chunk[1])
       glReadPixels(0, 0, chunk[0], chunk[1], GL_RED, GL_UNSIGNED_BYTE, buf)
