@@ -3,9 +3,9 @@ import pygame
 from OpenGL.GL import *
 
 
-def Normalize(v):
-  d = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
-  return (v[0] / d, v[1] / d, v[2] / d)
+def Normalize(x, y, z):
+  d = math.sqrt(x * x + y * y + z * z)
+  return (x / d, y / d, z / d)
 
 
 def CompileShader(src, kind):
@@ -43,7 +43,7 @@ varying vec2 texcoord;
 
 void main() {
   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-  position = gl_Vertex;
+  position = gl_ModelViewMatrix * gl_Vertex;
   texcoord = gl_MultiTexCoord0.st;
   normal = gl_Normal;
 }
@@ -99,6 +99,9 @@ class Render(object):
     # of them toavoid problems with trying to make sure we don't leak
     # them as objects get created and destroyed.
     self.lightmap_ids = {}
+    self.ground_id = glGenTextures(1)
+    self.current_ground = None
+    self.mesh_textures = {}
 
     self.moonlight_program = CompileProgram(
       moonlight_vshader, moonlight_fshader)
@@ -131,9 +134,14 @@ class Render(object):
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-  def LoadTexture(self, path):
-    s = pygame.image.load(path)
-    id = glGenTextures(1)
+  def LoadTexture(self, path, id=None):
+    try:
+      s = pygame.image.load(path)
+    except pygame.error as e:
+      print 'Failed to load texture %s: %s' % (path, e)
+      return self.white_texture
+    if id is None:
+      id = glGenTextures(1)
     raw = pygame.image.tostring(s, 'RGBA', 1)
     w, h = s.get_width(), s.get_height()
     glBindTexture(GL_TEXTURE_2D, id)
@@ -147,6 +155,18 @@ class Render(object):
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, raw)
     return id
+
+  def LoadMeshTexture(self, path):
+    if path not in self.mesh_textures:
+      self.mesh_textures[path] = glGenTextures(1)
+      self.LoadTexture(path, self.mesh_textures[path])
+    return self.mesh_textures[path]
+
+  def LoadGroundTexture(self, path):
+    if path != self.current_ground:
+      self.LoadTexture(path, self.ground_id)
+      self.current_ground = path
+    return self.ground_id
 
   def LightmapTextureIds(self, index):
     if index not in self.lightmap_ids:
@@ -166,7 +186,7 @@ class Render(object):
     glUniform1f(loc, m.blend)
 
     loc = glGetUniformLocation(prg, 'moon1_dir')
-    v = Normalize(m.vector)
+    v = Normalize(-m.vector[0], -m.vector[1], m.vector[2])
     glUniform3f(loc, *v)
 
     loc = glGetUniformLocation(prg, 'moon1_color')
