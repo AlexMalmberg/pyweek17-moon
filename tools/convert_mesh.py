@@ -4,7 +4,10 @@ import sys
 
 def Normalize(v):
   d = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
-  return (v[0] / d, v[1] / d, v[2] / d)
+  if d:
+    return (v[0] / d, v[1] / d, v[2] / d)
+  else:
+    return (0, 0, 0)
 
 
 def LoadMesh(filename, scale, offset, axis_order):
@@ -100,14 +103,21 @@ def LoadMesh(filename, scale, offset, axis_order):
          % (num_v, len(gl_vertices), len(gl_indices)))
 
   out = file(filename + '.vert', 'w')
-  for f in gl_vertices:
-    out.write(' %0.5f' % f)
-  out.write('\n')
+  for i, f in enumerate(gl_vertices):
+    out.write('%0.5f' % f)
+    if (i & 7) == 7:
+      out.write('\n')
+    else:
+      out.write(' ')
   out.close()
 
   out = file(filename + '.idx', 'w')
-  for i in gl_indices:
-    out.write(' %i' % i)
+  for i, vi in enumerate(gl_indices):
+    out.write('%i' % vi)
+    if i % 10 == 9:
+      out.write('\n')
+    else:
+      out.write(' ')
   out.write('\n')
   out.close()
 
