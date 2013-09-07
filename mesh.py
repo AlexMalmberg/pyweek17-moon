@@ -44,10 +44,10 @@ class Mesh(object):
 
     glEnable(GL_NORMALIZE)
 
-    #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     glPushMatrix()
     glTranslate(center[0], center[1], center[2])
     glScale(scale[0], scale[1], scale[2])
+    glRotate(angle, 0, 0, 1)
     glEnable(GL_CULL_FACE)
     glCullFace(GL_BACK)
     glDrawElements(GL_TRIANGLES, self.num_idx, GL_UNSIGNED_INT, None)
