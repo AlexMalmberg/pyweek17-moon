@@ -8,20 +8,42 @@
             "color": [0.4, 0.4, 0.8],
             "ambient": 0.1,
             "strength": 0.8,
-            "angle": -1.22,
-            "angle_speed": -0.0349,
+            "angle": -2.0,
+            "angle_speed": 0,
+            "angle2": -1.0,
+            "angle_speed2": -0.0349,
             "dz": 1.5
         }
     ],
 
     "targets": [
         {
-            "position": [650, 600],
-            "range": 20
+            "position": [1014, 830],
+            "range": 15
         },
         {
-            "position": [1800, 1800],
-            "range": 20
+            "position": [1024, 972],
+            "range": 15
+        },
+        {
+            "position": [1124, 1250],
+            "range": 15
+        },
+        {
+            "position": [1024, 972],
+            "range": 15
+        },
+        {
+            "position": [1032, 1297],
+            "range": 15
+        },
+        {
+            "position": [1504, 1457],
+            "range": 15
+        },
+        {
+            "position": [880, 748],
+            "range": 15
         }
     ]
 }
