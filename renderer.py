@@ -13,7 +13,7 @@ def CompileShader(src, kind):
   glShaderSource(shader, [src])
   glCompileShader(shader)
   if not glGetShaderiv(shader, GL_COMPILE_STATUS):
-    print 'failed to compile shader: %s' % glGetShaderInfoLog(shader)
+    print 'Failed to compile shader: %s' % glGetShaderInfoLog(shader)
   return shader
 
 
