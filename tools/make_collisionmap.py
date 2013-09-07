@@ -42,5 +42,6 @@ def main():
   dst.write(magic + ' ' + width + ' ' + height + ' ' + maxval + '\n')
   dst.write(out.tostring())
 
+
 if __name__ == '__main__':
   main()
