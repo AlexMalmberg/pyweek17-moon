@@ -34,7 +34,7 @@ class Level(object):
     self.render = render
     self.raw = json.loads(file(path + '/level.txt').read())
 
-    surface = pygame.image.load(path + '/height2.png')
+    surface = pygame.image.load(path + '/height.png')
     raw_heightmap = pygame.image.tostring(surface, 'P', 1)
     self.heightmap = numpy.fromstring(raw_heightmap, dtype=numpy.uint8)
     self.heightmap.shape = (surface.get_height(), surface.get_width())
@@ -47,7 +47,7 @@ class Level(object):
     self.collisionmap.shape = (h, w)
     self.collisionscale = [w / 2048., h / 2048.]
 
-    self.texture_path = path + '/texture1.png'
+    self.texture_path = path + '/texture.png'
 
   def Setup(self):
     self.texture = self.render.LoadGroundTexture(self.texture_path)
