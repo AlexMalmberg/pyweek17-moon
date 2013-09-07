@@ -30,22 +30,23 @@ class LevelMesh(object):
 
 
 class Level(object):
-  def __init__(self, render, path):
+  def __init__(self, render, path, load_maps=True):
     self.render = render
     self.raw = json.loads(file(path + '/level.txt').read())
 
-    surface = pygame.image.load(path + '/height.png')
-    raw_heightmap = pygame.image.tostring(surface, 'P', 1)
-    self.heightmap = numpy.fromstring(raw_heightmap, dtype=numpy.uint8)
-    self.heightmap.shape = (surface.get_height(), surface.get_width())
+    if load_maps:
+      surface = pygame.image.load(path + '/height.png')
+      raw_heightmap = pygame.image.tostring(surface, 'P', 1)
+      self.heightmap = numpy.fromstring(raw_heightmap, dtype=numpy.uint8)
+      self.heightmap.shape = (surface.get_height(), surface.get_width())
 
-    # TODO(alex): just build a coarse bsp tree of the geometry?
-    surface = pygame.image.load(path + '/collision.png')
-    raw_collisionmap = pygame.image.tostring(surface, 'P', 1)
-    self.collisionmap = numpy.fromstring(raw_collisionmap, dtype=numpy.uint8)
-    w, h = surface.get_width(), surface.get_height()
-    self.collisionmap.shape = (h, w)
-    self.collisionscale = [w / 2048., h / 2048.]
+      # TODO(alex): just build a coarse bsp tree of the geometry?
+      surface = pygame.image.load(path + '/collision.png')
+      raw_collisionmap = pygame.image.tostring(surface, 'P', 1)
+      self.collisionmap = numpy.fromstring(raw_collisionmap, dtype=numpy.uint8)
+      w, h = surface.get_width(), surface.get_height()
+      self.collisionmap.shape = (h, w)
+      self.collisionscale = [w / 2048., h / 2048.]
 
     self.texture_path = path + '/texture.png'
 

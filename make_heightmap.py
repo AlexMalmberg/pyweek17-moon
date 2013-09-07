@@ -42,7 +42,7 @@ def main():
   r = renderer.Render(s)
 
   path = sys.argv[1]
-  lvl = level.Level(r, path)
+  lvl = level.Level(r, path, load_maps=False)
   glUseProgram(renderer.CompileProgram(depth_vshader, depth_fshader))
   lvl.Setup()
 
