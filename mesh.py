@@ -40,7 +40,7 @@ class Mesh(object):
 
     glVertexPointer(3, GL_FLOAT, 8 * F, FP(0))
     glNormalPointer(GL_FLOAT, 8 * F, FP(3))
-    glTexCoordPointer(2, GL_FLOAT, 8 * F, FP(5))
+    glTexCoordPointer(2, GL_FLOAT, 8 * F, FP(6))
 
     glEnable(GL_NORMALIZE)
 
