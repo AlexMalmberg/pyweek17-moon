@@ -15,10 +15,10 @@ class Player(object):
   def Render(self):
     GL.glColor(self.light, 1, 0.0)
     GL.glBegin(GL.GL_QUADS)
-    GL.glVertex(self.position[0] - 8, self.position[1] - 8, 1)
-    GL.glVertex(self.position[0] + 8, self.position[1] - 8, 1)
-    GL.glVertex(self.position[0] + 8, self.position[1] + 8, 1)
-    GL.glVertex(self.position[0] - 8, self.position[1] + 8, 1)
+    GL.glVertex(self.position[0] - 10, self.position[1] - 10, 1)
+    GL.glVertex(self.position[0] + 10, self.position[1] - 10, 1)
+    GL.glVertex(self.position[0] + 10, self.position[1] + 10, 1)
+    GL.glVertex(self.position[0] - 10, self.position[1] + 10, 1)
     GL.glEnd()
 
 
@@ -199,7 +199,7 @@ class Game(object):
     GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
     self.render.SetupProjection(
-      self.player.position[0], self.player.position[1], 700)
+      self.player.position[0], self.player.position[1], 700) # height
 
     m = self.moons[0]
 
