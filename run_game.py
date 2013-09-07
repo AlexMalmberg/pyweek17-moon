@@ -22,7 +22,7 @@ def main():
   while i < len(sys.argv):
     if sys.argv[i] == '--fullscreen':
       fullscreen = True
-    elif sys.argv[i] == '--size':
+    elif sys.argv[i] == '--window':
       try:
         width, height = map(int, sys.argv[i + 1].split('x'))
       except:
