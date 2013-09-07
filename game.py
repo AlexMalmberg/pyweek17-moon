@@ -169,11 +169,11 @@ class Game(object):
     for m in self.moons:
       m.Update(t)
 
-    #if True:
-    #  x, y = 292, 2048 - 868
-    #  x = int(x / 2048. * m.lightmaps[0].width)
-    #  y = int(y / 2048. * m.lightmaps[0].height)
-    #  print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
+    if False:
+      x, y = 438.0, 1293.0
+      x = int(x / 2048. * m.lightmaps[0].width)
+      y = int(y / 2048. * m.lightmaps[0].height)
+      print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
 
     light = self.LightAtPosition(self.player.position)
     if light > 0:
