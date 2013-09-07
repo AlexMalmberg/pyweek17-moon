@@ -21,7 +21,6 @@ class Player(object):
     GL.glVertex(self.position[0] - 8, self.position[1] + 8, 1)
     GL.glEnd()
 
-
 class Moon(object):
   def __init__(self, raw_moon, level, texture_ids):
     print 'Moon.__init__'
