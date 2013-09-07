@@ -2,6 +2,7 @@ import math
 import pygame
 from OpenGL import GL
 
+import mesh
 import level
 import lightmap
 
@@ -14,57 +15,11 @@ class Player(object):
   def Render(self):
     GL.glColor(self.light, 1, 0.0)
     GL.glBegin(GL.GL_QUADS)
-    GL.glVertex(self.position[0] - 8, self.position[1] - 8)
-    GL.glVertex(self.position[0] + 8, self.position[1] - 8)
-    GL.glVertex(self.position[0] + 8, self.position[1] + 8)
-    GL.glVertex(self.position[0] - 8, self.position[1] + 8)
+    GL.glVertex(self.position[0] - 8, self.position[1] - 8, 1)
+    GL.glVertex(self.position[0] + 8, self.position[1] - 8, 1)
+    GL.glVertex(self.position[0] + 8, self.position[1] + 8, 1)
+    GL.glVertex(self.position[0] - 8, self.position[1] + 8, 1)
     GL.glEnd()
-
-
-class Cube(object):
-  def __init__(self, x0, y0, x1, y1, h):
-    self.x0 = x0
-    self.y0 = 2048 - y0
-    self.x1 = x1
-    self.y1 = 2048 - y1
-    self.h = h
-
-  def Render(self):
-    GL.glEnable(GL.GL_DEPTH_TEST)
-    GL.glBegin(GL.GL_QUADS)
-
-    GL.glNormal(0, -1, 0)
-    GL.glVertex(self.x0, self.y0, 0)
-    GL.glVertex(self.x1, self.y0, 0)
-    GL.glVertex(self.x1, self.y0, self.h)
-    GL.glVertex(self.x0, self.y0, self.h)
-
-    GL.glNormal(-1, 0, 0)
-    GL.glVertex(self.x1, self.y0, 0)
-    GL.glVertex(self.x1, self.y1, 0)
-    GL.glVertex(self.x1, self.y1, self.h)
-    GL.glVertex(self.x1, self.y0, self.h)
-
-    GL.glNormal(0, 1, 0)
-    GL.glVertex(self.x1, self.y1, 0)
-    GL.glVertex(self.x0, self.y1, 0)
-    GL.glVertex(self.x0, self.y1, self.h)
-    GL.glVertex(self.x1, self.y1, self.h)
-
-    GL.glNormal(1, 0, 0)
-    GL.glVertex(self.x0, self.y1, 0)
-    GL.glVertex(self.x0, self.y0, 0)
-    GL.glVertex(self.x0, self.y0, self.h)
-    GL.glVertex(self.x0, self.y1, self.h)
-
-    GL.glNormal(0, 0, 1)
-    GL.glVertex(self.x0, self.y0, self.h)
-    GL.glVertex(self.x1, self.y0, self.h)
-    GL.glVertex(self.x1, self.y1, self.h)
-    GL.glVertex(self.x0, self.y1, self.h)
-
-    GL.glEnd()
-    GL.glDisable(GL.GL_DEPTH_TEST)
 
 
 class Moon(object):
@@ -149,10 +104,10 @@ class Target(object):
     t = abs(math.fmod(t, 3) - 1.5) / 1.5
     GL.glColor(t, t, 1.0)
     GL.glBegin(GL.GL_QUADS)
-    GL.glVertex(self.position[0] - self.range, self.position[1] - self.range)
-    GL.glVertex(self.position[0] + self.range, self.position[1] - self.range)
-    GL.glVertex(self.position[0] + self.range, self.position[1] + self.range)
-    GL.glVertex(self.position[0] - self.range, self.position[1] + self.range)
+    GL.glVertex(self.position[0] - self.range, self.position[1] - self.range, 1)
+    GL.glVertex(self.position[0] + self.range, self.position[1] - self.range, 1)
+    GL.glVertex(self.position[0] + self.range, self.position[1] + self.range, 1)
+    GL.glVertex(self.position[0] - self.range, self.position[1] + self.range, 1)
     GL.glEnd()
 
 
@@ -166,7 +121,7 @@ class Game(object):
     print 'Game.__init__'
     self.render = render
     self.mission = mission
-    self.level = level.Level(mission.level_path)
+    self.level = level.Level(render, mission.level_path)
     self.player = Player(mission.player_start)
     self.moons = []
     for m in mission.moons:
@@ -178,14 +133,6 @@ class Game(object):
       self.targets.append(Target(t))
     self.active_target_index = 0
     self.active_target = self.targets[0]
-
-    self.texture = render.white_texture
-    #self.texture = render.LoadTexture('data/test_map/texture1.png')
-
-    self.hack_meshes = []
-    self.hack_meshes.append(Cube(288, 640, 589, 871, 102))
-    self.hack_meshes.append(Cube(887, 745, 1338, 1034, 102))
-    self.hack_meshes.append(Cube(822, 287, 1404, 626, 110))
 
   def HandleInput(self, dt):
     for e in pygame.event.get():
@@ -254,32 +201,17 @@ class Game(object):
 
     GL.glEnable(GL.GL_TEXTURE_2D)
     self.render.SetMoonlightShader((0.4, 0.4, 0.4, 1.0), self.moons)
+    GL.glEnable(GL.GL_DEPTH_TEST)
 
-    GL.glActiveTexture(GL.GL_TEXTURE0)
-    GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
-
-    GL.glColor(0.7, 0.7, 0.7)
-    GL.glBegin(GL.GL_QUADS)
-    GL.glTexCoord(0, 0)
-    GL.glVertex(0, 0)
-    GL.glTexCoord(1, 0)
-    GL.glVertex(2048, 0)
-    GL.glTexCoord(1, 1)
-    GL.glVertex(2048, 2048)
-    GL.glTexCoord(0, 1)
-    GL.glVertex(0, 2048)
-    GL.glEnd()
-
-    GL.glBindTexture(GL.GL_TEXTURE_2D, self.render.white_texture)
-
-    for hm in self.hack_meshes:
-      hm.Render()
+    self.level.Render()
 
     GL.glUseProgram(0)
     GL.glDisable(GL.GL_TEXTURE_2D)
 
     self.player.Render()
     self.active_target.Render(t)
+
+    GL.glDisable(GL.GL_DEPTH_TEST)
 
     pygame.display.flip()
 
@@ -290,6 +222,8 @@ class Game(object):
 
     debug_interval = 2.0
     next_debug = 0.0
+
+    self.level.Setup()
 
     while self.done == self.NOT_DONE:
       if t > next_debug:
