@@ -30,6 +30,10 @@ class Moon(object):
     self.dz = raw_moon['dz']
     self.strength = raw_moon['strength']
     self.color = map(float, raw_moon['color'])
+    if 'ambient' in raw_moon:
+      self.ambient = float(raw_moon['ambient'])
+    else:
+      self.ambient = 0
 
     self.update_interval = 0.25
 
