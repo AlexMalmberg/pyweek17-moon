@@ -67,15 +67,19 @@ uniform sampler2D moon1_1, moon1_2;
 
 void main() {
   vec4 color = texture2D(tex, texcoord);
-  vec4 light_pos = position / 2048.;
+
+  float height = position.z;
+  vec4 light_pos = position;
+  light_pos.xyz += normal * 3.;
+  light_pos /= 2048.;
 
   vec4 light = ambient;
 
   float light1 = texture2D(moon1_1, light_pos.xy).a * 255.;
-  light1 = 1. - clamp((light1 - position.z) * 0.4, 0., 1.);
+  light1 = 1. - clamp((light1 - height) * 0.4, 0., 1.);
 
   float light2 = texture2D(moon1_2, light_pos.xy).a * 255.;
-  light2 = 1. - clamp((light2 - position.z) * 0.4, 0., 1.);
+  light2 = 1. - clamp((light2 - height) * 0.4, 0., 1.);
 
   float d = clamp(dot(normal, moon1_dir), 0., 1.);
 
