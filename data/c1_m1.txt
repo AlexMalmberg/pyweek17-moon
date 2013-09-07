@@ -7,7 +7,7 @@
 		{
 			"color": [0.4, 0.4, 1.0],
 			"strength": 0.8,
-			"angle": 0,
+			"angle": 3.66,
 			"angle_speed": 0.0349,
 			"dz": 0.5
 		}
@@ -15,7 +15,7 @@
 
 	"targets": [
 		{
-			"position": [970, 1500],
+			"position": [1200, 1100],
 			"range": 20
 		}
 	]
