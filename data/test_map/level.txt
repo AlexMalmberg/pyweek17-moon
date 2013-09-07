@@ -19,6 +19,11 @@
             "obj_path": "data/model/cube_sc.obj",
             "center": [800.0, 800.0, 0.0],
             "scale": [400, 400, 400]
+        },
+        {
+            "obj_path": "data/model/castle2.obj",
+            "center": [1500.0, 800.0, 0.0],
+            "scale": [20, 20, 20]
         }
     ]
 }
