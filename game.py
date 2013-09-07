@@ -145,6 +145,8 @@ class Game(object):
               and e.key in (pygame.K_ESCAPE, pygame.K_q))):
         self.done = self.ABORTED
         return
+      if e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE:
+        print 'Player at: %r' % self.player.position
 
     pressed = pygame.key.get_pressed()
     delta = [0, 0]
