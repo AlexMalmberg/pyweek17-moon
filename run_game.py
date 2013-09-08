@@ -64,7 +64,7 @@ def main():
     while i < len(levels):
       level_path = levels[i]
       m = mission.Mission(level_path)
-      g = game.Game(render, m)
+      g = game.Game(render, snds, m)
       result = g.Run()
       if result == game.Game.ABORTED:
         break
