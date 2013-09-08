@@ -34,9 +34,6 @@ def main():
       level_path = sys.argv[i]
     i += 1
 
-  if not level_path:
-    Usage()
-
   pygame.init()
 
   flags = pygame.OPENGL | pygame.DOUBLEBUF | pygame.HWSURFACE
@@ -50,10 +47,19 @@ def main():
 
   render = renderer.Render(screen)
 
-  m = mission.Mission(level_path)
-  g = game.Game(render, m)
-  result = g.Run()
-  print 'result: %i' % result
+  if level_path:
+    m = mission.Mission(level_path)
+    g = game.Game(render, m)
+    result = g.Run()
+    print 'result: %i' % result
+  else:
+    for level_path in ('data/c0_m0.txt', 'data/c1_m0.txt', 'data/c1_m1.txt',
+                       'data/c1_m2.txt'):
+      m = mission.Mission(level_path)
+      g = game.Game(render, m)
+      result = g.Run()
+      if result != game.Game.VICTORY:
+        break
 
 
 if __name__ == '__main__':

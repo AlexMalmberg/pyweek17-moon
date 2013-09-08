@@ -82,6 +82,9 @@ class Moon(object):
   def LightAtPosition(self, pos):
     x = int(pos[0] / 2048. * self.lightmaps[0].width)
     y = int(pos[1] / 2048. * self.lightmaps[0].height)
+    if (x < 0 or y < 0 or x >= self.lightmaps[0].width
+        or y >= self.lightmaps[0].height):
+      return 1
     if self.lightmaps[self.active_lightmap].lightmap[y][x] > 0:
       l0 = 0
     else:
@@ -131,6 +134,8 @@ class Game(object):
     for m in mission.moons:
       texture_ids = render.LightmapTextureIds(len(self.moons))
       self.moons.append(Moon(m, self.level, texture_ids))
+
+    self.ambient = mission.ambient
 
     self.targets = []
     for t in mission.targets:
@@ -206,7 +211,7 @@ class Game(object):
     m = self.moons[0]
 
     GL.glEnable(GL.GL_TEXTURE_2D)
-    self.render.SetMoonlightShader((0.4, 0.4, 0.4, 1.0), self.moons)
+    self.render.SetMoonlightShader(self.ambient, self.moons)
     GL.glEnable(GL.GL_DEPTH_TEST)
 
     self.level.Render()
