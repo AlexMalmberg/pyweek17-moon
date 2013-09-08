@@ -109,13 +109,50 @@ class Target(object):
 
   def Render(self, t):
     t = abs(math.fmod(t, 3) - 1.5) / 1.5
-    GL.glColor(t, t, 1.0)
-    GL.glBegin(GL.GL_QUADS)
-    GL.glVertex(self.position[0] - self.range, self.position[1] - self.range, 1)
-    GL.glVertex(self.position[0] + self.range, self.position[1] - self.range, 1)
-    GL.glVertex(self.position[0] + self.range, self.position[1] + self.range, 1)
-    GL.glVertex(self.position[0] - self.range, self.position[1] + self.range, 1)
+    GL.glEnable(GL.GL_BLEND)
+    GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE)
+    cx = self.position[0]
+    cy = self.position[1]
+    x0 = cx - self.range
+    y0 = cy - self.range
+    x1 = cx + self.range
+    y1 = cy + self.range
+
+    GL.glBegin(GL.GL_TRIANGLES)
+    GL.glColor(t, t, 1.0, t)
+    GL.glVertex(x0, y0, 1)
+    GL.glVertex(x1, y0, 1)
+    GL.glVertex(x1, y1, 1)
+
+    GL.glVertex(x0, y0, 1)
+    GL.glVertex(x1, y1, 1)
+    GL.glVertex(x0, y1, 1)
+
+    GL.glVertex(x0, y0, 1)
+    GL.glVertex(x1, y0, 1)
+    GL.glColor(t, t, 1.0, 0.0)
+    GL.glVertex(cx, cy, 200)
+
+    GL.glColor(t, t, 1.0, t)
+    GL.glVertex(x0, y1, 1)
+    GL.glVertex(x1, y1, 1)
+    GL.glColor(t, t, 1.0, 0.0)
+    GL.glVertex(cx, cy, 200)
+
+    GL.glColor(t, t, 1.0, t)
+    GL.glVertex(x0, y0, 1)
+    GL.glVertex(x0, y1, 1)
+    GL.glColor(t, t, 1.0, 0.0)
+    GL.glVertex(cx, cy, 200)
+
+    GL.glColor(t, t, 1.0, t)
+    GL.glVertex(x1, y0, 1)
+    GL.glVertex(x1, y1, 1)
+    GL.glColor(t, t, 1.0, 0.0)
+    GL.glVertex(cx, cy, 200)
+
     GL.glEnd()
+    GL.glDisable(GL.GL_BLEND)
 
 
 class Game(object):
