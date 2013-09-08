@@ -1,22 +1,27 @@
 {
-	"level_path": "data/c1/",
+    "level_path": "data/c1/",
 
-	"player_start": [100, 1820],
+    "player_start": [174, 1786],
+    "ambient": [0.2, 0.2, 0.2, 1.0],
 
-	"moons": [
-		{
-			"color": [0.4, 0.4, 1.0],
-			"strength": 0.3,
-			"angle": 3.66,
-			"angle_speed": 0.0349,
-			"dz": 0.5
-		}
-	],
+    "moons": [
+	{
+	    "color": [0.4, 0.4, 1.0],
+	    "strength": 0.3,
+	    "angle": 3.66,
+	    "angle_speed": 0.0349,
+	    "dz": 0.5
+	}
+    ],
 
-	"targets": [
-		{
-			"position": [1675, 700],
-			"range": 10
-		}
-	]
+    "targets": [
+	{
+	    "position": [1675, 600],
+	    "range": 10
+	},
+	{
+	    "position": [174, 1786],
+	    "range": 10
+	}
+    ]
 }
