@@ -21,7 +21,7 @@ class Sounds(object):
   def Reset(self):
     self.next_warning = 0.0
     self.next_discovery = 0.0
-    pygame.mixer.stop()
+    pygame.mixer.fadeout(250)
 
   def PlayTargetSound(self):
     pygame.mixer.Channel(4).play(self.crunchy)
