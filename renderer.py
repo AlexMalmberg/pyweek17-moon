@@ -141,6 +141,17 @@ class Render(object):
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
+  def FullscreenQuad(self):
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glBegin(GL_QUADS)
+    glVertex(-1, -1)
+    glVertex(1, -1)
+    glVertex(1, 1)
+    glVertex(-1, 1)
+    glEnd()
+    glMatrixMode(GL_MODELVIEW)
+
   def LoadTexture(self, path, id=None):
     try:
       s = pygame.image.load(path)

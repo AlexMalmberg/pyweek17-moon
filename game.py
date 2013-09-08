@@ -252,6 +252,26 @@ class Game(object):
       l += m.LightAtPosition(pos)
     return l
 
+  def DoneDefeat(self, t):
+    if self.done:
+      if self.done == self.DEFEAT:
+        self.sounds.PlayDiscovery(t)
+      return
+    self.done = self.DEFEAT
+    self.fade_start = t
+    self.fade_end = t + 3.0
+    self.fade_in = False
+    self.fade_color = (0.6, 0.1, 0.1, 1)
+
+  def DoneVictory(self, t):
+    if self.done:
+      return
+    self.done = self.VICTORY
+    self.fade_start = t
+    self.fade_end = t + 3.0
+    self.fade_in = False
+    self.fade_color = (0, 0, 0, 1)
+
   def Update(self, t, dt):
     for m in self.moons:
       m.Update(t)
@@ -262,21 +282,25 @@ class Game(object):
       y = int(y / 2048. * m.lightmaps[0].height)
       print m.lightmaps[m.active_lightmap].lightmap[y - 2:y + 2,x - 2:x + 2]
 
+    if self.done == self.DEFEAT:
+      # Hack to get the sounds to repeat even if you re-enter the shadow.
+      self.DoneDefeat(t)
+      return
+
     light = self.LightAtPosition(self.player.position)
     if light > 0:
       self.player.light += dt
       if self.player.light >= 0.1:
         self.sounds.PlayWarning(t)
       if self.player.light >= 0.8:
-        self.done = self.DEFEAT
-        self.sounds.PlayDiscovery(t)
+        self.DoneDefeat(t)
     else:
       self.player.light = 0
 
     if not self.done and self.active_target.CloseEnough(self.player.position):
       self.active_target_index += 1
       if self.active_target_index == len(self.targets):
-        self.done = self.VICTORY
+        self.DoneVictory(t)
       else:
         self.active_target = self.targets[self.active_target_index]
 
@@ -304,6 +328,20 @@ class Game(object):
 
     GL.glDisable(GL.GL_DEPTH_TEST)
 
+    if t < self.fade_end or not self.fade_in:
+      blend = (t - self.fade_start) / (self.fade_end - self.fade_start)
+      blend = max(0, min(1, blend))
+      if self.fade_in:
+        blend = 1 - blend
+      GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
+      GL.glEnable(GL.GL_BLEND)
+      GL.glColor(self.fade_color[0],
+                 self.fade_color[1],
+                 self.fade_color[2],
+                 blend)
+      self.render.FullscreenQuad()
+      GL.glDisable(GL.GL_BLEND)
+
     pygame.display.flip()
 
   def Run(self):
@@ -317,7 +355,17 @@ class Game(object):
     self.level.Setup()
     self.sounds.Reset()
 
-    while self.done == self.NOT_DONE:
+    self.fade_start = 0
+    self.fade_end = 2.0
+    self.fade_in = True
+    self.fade_color = (0, 0, 0, 1)
+
+    while True:
+      if self.done == self.ABORTED:
+        break
+      if self.done != self.NOT_DONE and t > self.fade_end:
+        break
+
       if DEBUG and t > next_debug:
         print clock
         next_debug += debug_interval
