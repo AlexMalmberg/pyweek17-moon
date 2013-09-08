@@ -103,7 +103,7 @@ class Render(object):
     self.aspect_ratio = width / float(height)
 
     # We hand out all texture ids here by 'user' and never delete any
-    # of them toavoid problems with trying to make sure we don't leak
+    # of them to avoid problems with trying to make sure we don't leak
     # them as objects get created and destroyed.
     self.lightmap_ids = {}
     self.ground_id = glGenTextures(1)
