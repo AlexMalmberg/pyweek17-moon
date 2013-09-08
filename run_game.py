@@ -48,18 +48,35 @@ def main():
   render = renderer.Render(screen)
 
   if level_path:
+    print 'Debugging map %s.' % level_path
     m = mission.Mission(level_path)
     g = game.Game(render, m)
     result = g.Run()
-    print 'result: %i' % result
+    print 'Result: %i, took %0.1f seconds' % (result, g.play_time)
   else:
-    for level_path in ('data/c0_m0.txt', 'data/c1_m0.txt', 'data/c1_m1.txt',
-                       'data/c1_m2.txt'):
+    levels =  ('data/c0_m0.txt', 'data/c1_m0.txt', 'data/c1_m1.txt',
+               'data/c1_m2.txt')
+    par_times = (62.7, 12.4, 54.0, 59.3)
+    play_times = [None] * len(levels)
+    i = 0
+    while i < len(levels):
+      level_path = levels[i]
       m = mission.Mission(level_path)
       g = game.Game(render, m)
       result = g.Run()
-      if result != game.Game.VICTORY:
+      if result == game.Game.ABORTED:
         break
+      if result == game.Game.VICTORY:
+        play_times[i] = g.play_time
+        i += 1
+
+    if i > 0:
+      print 'Your times:'
+      for i, (play_time, par_time) in enumerate(zip(play_times, par_times)):
+        if play_time is None:
+          continue
+        print ('Mission %i: %5.1fs    Par time: %5.1fs'
+               % (i + 1, play_time, par_time))
 
 
 if __name__ == '__main__':
