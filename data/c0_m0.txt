@@ -21,7 +21,7 @@
     "targets": [
         {
             "position": [1014, 830],
-            "range": 15,
+            "range": 15
         },
         {
             "position": [1024, 972],
