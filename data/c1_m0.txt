@@ -18,6 +18,7 @@
     "targets": [
 	{
 	    "position": [970, 1400],
+            "sound": 1,
 	    "range": 20
 	},
 	{

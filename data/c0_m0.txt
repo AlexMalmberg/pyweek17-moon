@@ -21,7 +21,7 @@
     "targets": [
         {
             "position": [1014, 830],
-            "range": 15
+            "range": 15,
         },
         {
             "position": [1024, 972],
@@ -33,7 +33,8 @@
         },
         {
             "position": [1504, 1457],
-            "range": 15
+            "range": 15,
+            "sound": 1
         },
         {
             "position": [880, 748],

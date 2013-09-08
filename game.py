@@ -138,6 +138,7 @@ class Target(object):
   def __init__(self, raw_target):
     self.position = map(float, raw_target['position'])
     self.range = float(raw_target['range'])
+    self.sound = 'sound' in raw_target and bool(raw_target['sound'])
 
   def CloseEnough(self, pos):
     dx = self.position[0] - pos[0]
@@ -298,6 +299,8 @@ class Game(object):
       self.player.light = 0
 
     if not self.done and self.active_target.CloseEnough(self.player.position):
+      if self.active_target.sound:
+        self.sounds.PlayTargetSound()
       self.active_target_index += 1
       if self.active_target_index == len(self.targets):
         self.DoneVictory(t)
