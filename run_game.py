@@ -56,7 +56,7 @@ def main():
   else:
     levels =  ('data/c0_m0.txt', 'data/c1_m0.txt', 'data/c1_m1.txt',
                'data/c1_m2.txt')
-    par_times = (62.7, 12.4, 54.0, 59.3)
+    par_times = (62.7, 26.7, 84.4, 109.1)
     play_times = [None] * len(levels)
     i = 0
     while i < len(levels):
