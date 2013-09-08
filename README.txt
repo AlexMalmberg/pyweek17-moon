@@ -28,3 +28,5 @@ Alexey Klimov (3d models, sounds)
 Stepan Davidovic (sounds)
 
 License: GPLv3
+
+git repo at: https://github.com/AlexMalmberg/pyweek17-moon
