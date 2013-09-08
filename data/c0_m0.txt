@@ -2,15 +2,16 @@
     "level_path": "data/c0/",
 
     "player_start": [880, 748],
+    "ambient": [0.1, 0.1, 0.1, 1.0],
 
     "moons": [
         {
             "color": [0.4, 0.4, 0.8],
-            "ambient": 0.1,
+            "ambient": 0.05,
             "strength": 0.8,
-            "angle": -2.0,
-            "angle_speed": 0,
-            "angle2": -1.0,
+            "angle2": -2.0,
+            "angle_speed": -0.1,
+            "angle": -1.0,
             "angle_speed2": -0.0349,
             "dz": 1.5
         }
