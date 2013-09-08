@@ -8,18 +8,56 @@ import lightmap
 
 
 class Player(object):
-  def __init__(self, position):
+  def __init__(self, render, position):
     self.position = position
     self.light = 0
+    self.frame_ids = []
+    for path in ('f1', 'f2', 'f3', 'f4', 'f3', 'f2'):
+      self.frame_ids.append(
+        render.LoadMeshTexture('data/werewolf/%s.png' % path))
+
+    self.move_time = 0
+    self.frame_duration = 0.05
+
+    self.Move(0, 0)
+
+  def Move(self, dt, angle):
+    self.move_time += dt
+    self.move_time = math.fmod(
+      self.move_time, self.frame_duration * len(self.frame_ids))
+    self.current_frame = int(self.move_time / self.frame_duration)
+    self.current_frame %= len(self.frame_ids)
+    self.next_frame = (self.current_frame + 1) % len(self.frame_ids)
+    self.blend = ((self.move_time - self.current_frame * self.frame_duration)
+                  / self.frame_duration)
+    self.angle = angle
 
   def Render(self):
-    GL.glColor(self.light, 1, 0.0)
-    GL.glBegin(GL.GL_QUADS)
-    GL.glVertex(self.position[0] - 10, self.position[1] - 10, 1)
-    GL.glVertex(self.position[0] + 10, self.position[1] - 10, 1)
-    GL.glVertex(self.position[0] + 10, self.position[1] + 10, 1)
-    GL.glVertex(self.position[0] - 10, self.position[1] + 10, 1)
-    GL.glEnd()
+    s = 18
+    GL.glEnable(GL.GL_BLEND)
+    GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
+
+    GL.glPushMatrix()
+    GL.glTranslate(self.position[0], self.position[1], 0)
+    GL.glRotate(-self.angle, 0, 0, 1)
+
+    for b, t, z in ((self.blend, self.frame_ids[self.current_frame], 0.5),
+                    (1 - self.blend, self.frame_ids[self.next_frame], 0.6)):
+      GL.glColor(1, 1, 1, b)
+      GL.glBindTexture(GL.GL_TEXTURE_2D, t)
+      GL.glBegin(GL.GL_QUADS)
+      GL.glTexCoord(0, 0)
+      GL.glVertex(-s, -s, z)
+      GL.glTexCoord(1, 0)
+      GL.glVertex( s, -s, z)
+      GL.glTexCoord(1, 1)
+      GL.glVertex( s,  s, z)
+      GL.glTexCoord(0, 1)
+      GL.glVertex(-s,  s, z)
+      GL.glEnd()
+
+    GL.glDisable(GL.GL_BLEND)
+    GL.glPopMatrix()
 
 
 class Moon(object):
@@ -166,7 +204,7 @@ class Game(object):
     self.render = render
     self.mission = mission
     self.level = level.Level(render, mission.level_path)
-    self.player = Player(mission.player_start)
+    self.player = Player(render, mission.player_start)
     self.moons = []
     for m in mission.moons:
       texture_ids = render.LightmapTextureIds(len(self.moons))
@@ -206,6 +244,7 @@ class Game(object):
       delta[0] *= dt * speed
       delta[1] *= dt * speed
       self.player.position = self.level.Move(self.player.position, delta)
+      self.player.Move(dt, math.atan2(delta[0], delta[1]) / math.pi * 180.)
 
   def LightAtPosition(self, pos):
     l = 0
@@ -254,9 +293,11 @@ class Game(object):
     self.level.Render()
 
     GL.glUseProgram(0)
-    GL.glDisable(GL.GL_TEXTURE_2D)
 
     self.player.Render()
+
+    GL.glDisable(GL.GL_TEXTURE_2D)
+
     self.active_target.Render(t)
 
     GL.glDisable(GL.GL_DEPTH_TEST)
