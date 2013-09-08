@@ -31,7 +31,7 @@
         {
             "comment": "fence",
             "obj_path": "data/model/cube.obj",
-            "texture_path": "data/model/wood_medium.png",
+            "texture_path": "data/model/wood_small.png",
             "center": [784.0, 1308.0, 0.0],
             "scale": [11.2, 0.32, 3.0]
         },
@@ -39,28 +39,28 @@
         {
             "comment": "fence",
             "obj_path": "data/model/cube.obj",
-            "texture_path": "data/model/wood_medium.png",
+            "texture_path": "data/model/wood_small.png",
             "center": [784.0, 1308.0, 0.0],
             "scale": [11.2, 0.32, 3.0]
         },
         {
             "comment": "fence",
             "obj_path": "data/model/cube.obj",
-            "texture_path": "data/model/wood_medium.png",
+            "texture_path": "data/model/wood_small.png",
             "center": [672.0, 1172.0, 0.0],
             "scale": [0.32, 2.4, 3.0]
         },
         {
             "comment": "fence",
             "obj_path": "data/model/cube.obj",
-            "texture_path": "data/model/wood_medium.png",
+            "texture_path": "data/model/wood_small.png",
             "center": [672.0, 1287.2, 0.0],
             "scale": [0.32, 2.4, 3.0]
         },
         {
             "comment": "fence",
             "obj_path": "data/model/cube.obj",
-            "texture_path": "data/model/wood_medium.png",
+            "texture_path": "data/model/wood_small.png",
             "center": [682.0, 948.0, 0.0],
             "scale": [0.32, 4.0, 3.0]
         },
