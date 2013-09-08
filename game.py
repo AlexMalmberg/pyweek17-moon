@@ -263,8 +263,8 @@ class Game(object):
 
     light = self.LightAtPosition(self.player.position)
     if light > 0:
-      self.player.light += dt * light / 1.0
-      if self.player.light >= 1:
+      self.player.light += dt
+      if self.player.light >= 0.8:
         self.done = self.DEFEAT
     else:
       self.player.light = 0
