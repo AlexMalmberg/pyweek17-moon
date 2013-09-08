@@ -7,6 +7,9 @@ import level
 import lightmap
 
 
+DEBUG = True
+
+
 class Player(object):
   def __init__(self, render, position):
     self.position = position
@@ -62,7 +65,6 @@ class Player(object):
 
 class Moon(object):
   def __init__(self, raw_moon, level, texture_ids):
-    print 'Moon.__init__'
     self.angle = raw_moon['angle']
     self.angle_speed = raw_moon['angle_speed']
     self.dz = raw_moon['dz']
@@ -79,14 +81,11 @@ class Moon(object):
                       lightmap.Lightmap(level, texture_ids[1]),
                       lightmap.Lightmap(level, texture_ids[2])]
 
-    print 'Moon.__init__ create lightmaps'
     for i in xrange(3):
       self.lightmaps[i].StartCalculation(
         *self._VectorAtTime(i * self.update_interval))
-    print 'Moon.__init__ finish map 0, 1 calculations'
     self.lightmaps[0].FinishCalculation()
     self.lightmaps[1].FinishCalculation()
-    print 'Moon.__init__ done'
 
     self.blend = 0
     self.active_lightmap = 0
@@ -200,7 +199,6 @@ class Game(object):
   DEFEAT = 3
 
   def __init__(self, render, mission):
-    print 'Game.__init__'
     self.render = render
     self.mission = mission
     self.level = level.Level(render, mission.level_path)
@@ -225,8 +223,9 @@ class Game(object):
               and e.key in (pygame.K_ESCAPE, pygame.K_q))):
         self.done = self.ABORTED
         return
-      if e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE:
-        print 'Player at: %r' % self.player.position
+      if DEBUG:
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE:
+          print 'Player at: %r' % self.player.position
 
     pressed = pygame.key.get_pressed()
     delta = [0, 0]
@@ -256,7 +255,7 @@ class Game(object):
     for m in self.moons:
       m.Update(t)
 
-    if False:
+    if DEBUG and False:
       x, y = 438.0, 1293.0
       x = int(x / 2048. * m.lightmaps[0].width)
       y = int(y / 2048. * m.lightmaps[0].height)
@@ -265,13 +264,12 @@ class Game(object):
     light = self.LightAtPosition(self.player.position)
     if light > 0:
       self.player.light += dt * light / 1.0
-      #if self.player.light >= 1:
-      #  self.done = self.DEFEAT
+      if self.player.light >= 1:
+        self.done = self.DEFEAT
     else:
       self.player.light = 0
 
     if not self.done and self.active_target.CloseEnough(self.player.position):
-      print 'trigger %i' % self.active_target_index
       self.active_target_index += 1
       if self.active_target_index == len(self.targets):
         self.done = self.VICTORY
@@ -315,7 +313,7 @@ class Game(object):
     self.level.Setup()
 
     while self.done == self.NOT_DONE:
-      if t > next_debug:
+      if DEBUG and t > next_debug:
         print clock
         next_debug += debug_interval
 
@@ -328,4 +326,5 @@ class Game(object):
       self.Update(t, dt)
       self.Render(t)
 
+    self.play_time = t
     return self.done
