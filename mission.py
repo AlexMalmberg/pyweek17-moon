@@ -7,3 +7,8 @@ class Mission(object):
     self.moons = raw['moons']
     self.targets = raw['targets']
     self.player_start = map(float, raw['player_start'])
+    if 'ambient' in raw:
+      self.ambient = map(float, raw['ambient'])
+    else:
+      self.ambient = (0.4, 0.4, 0.4, 1.0)
+
