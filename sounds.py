@@ -14,13 +14,17 @@ class Sounds(object):
       self.disc.append(pygame.mixer.Sound(
           'data/voices/discovered/s%i.ogg' % i))
 
-    self.Reset()
+    self.crunchy = pygame.mixer.Sound('data/voices/crunchy.ogg')
 
+    self.Reset()
 
   def Reset(self):
     self.next_warning = 0.0
     self.next_discovery = 0.0
     pygame.mixer.stop()
+
+  def PlayTargetSound(self):
+    pygame.mixer.Channel(4).play(self.crunchy)
 
   def PlayWarning(self, t):
     if t < self.next_warning:
