@@ -6,6 +6,11 @@ find something to eat and get back to your house before dawn, all
 while avoiding discovery by the other villagers who ceaselessly watch
 over the village from their houses.
 
+To run:
+  python run_game.py --fullscreen
+
+(or drop the --fullscreen if you want it windowed, or change the size
+of the window with --window 123x456)
 
 More half-baked than usual, but:
   Move with arrow keys.
@@ -16,7 +21,10 @@ More half-baked than usual, but:
 
 
 Hacked together by:
+
 Alexander Malmberg (coding, 3d models, textures, sounds)
 Christofer Malmberg (coding, 3d models, textures, sounds)
 Alexey Klimov (3d models, sounds)
 Stepan Davidovic (sounds)
+
+License: GPLv3
