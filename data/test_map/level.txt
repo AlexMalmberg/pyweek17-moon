@@ -31,7 +31,7 @@
             "scale": [20, 20, 20]
         },
         {
-            "obj_path": "out/unfinished_house.obj",
+            "obj_path": "out/House.obj",
             "texture_path": "data/test_texture.png",
             "center": [500.0, 500.0, 0.0],
             "scale": [1, 1, 1]
