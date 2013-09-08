@@ -6,6 +6,7 @@ from OpenGL import GL
 import game
 import mission
 import renderer
+import sounds
 
 
 def Usage():
@@ -46,11 +47,12 @@ def main():
   screen = pygame.display.set_mode((width, height), flags)
 
   render = renderer.Render(screen)
+  snds = sounds.Sounds()
 
   if level_path:
     print 'Debugging map %s.' % level_path
     m = mission.Mission(level_path)
-    g = game.Game(render, m)
+    g = game.Game(render, snds, m)
     result = g.Run()
     print 'Result: %i, took %0.1f seconds' % (result, g.play_time)
   else:

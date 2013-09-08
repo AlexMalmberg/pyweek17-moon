@@ -198,8 +198,9 @@ class Game(object):
   VICTORY = 2
   DEFEAT = 3
 
-  def __init__(self, render, mission):
+  def __init__(self, render, sounds, mission):
     self.render = render
+    self.sounds = sounds
     self.mission = mission
     self.level = level.Level(render, mission.level_path)
     self.player = Player(render, mission.player_start)
@@ -264,8 +265,11 @@ class Game(object):
     light = self.LightAtPosition(self.player.position)
     if light > 0:
       self.player.light += dt
+      if self.player.light >= 0.1:
+        self.sounds.PlayWarning(t)
       if self.player.light >= 0.8:
         self.done = self.DEFEAT
+        self.sounds.PlayDiscovery(t)
     else:
       self.player.light = 0
 
@@ -311,6 +315,7 @@ class Game(object):
     next_debug = 0.0
 
     self.level.Setup()
+    self.sounds.Reset()
 
     while self.done == self.NOT_DONE:
       if DEBUG and t > next_debug:
