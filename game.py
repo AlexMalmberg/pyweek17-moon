@@ -7,7 +7,7 @@ import level
 import lightmap
 
 
-DEBUG = True
+DEBUG = False
 
 
 class Player(object):
