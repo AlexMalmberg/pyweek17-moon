@@ -6,7 +6,7 @@
 	"moons": [
 		{
 			"color": [0.4, 0.4, 1.0],
-			"strength": 0.8,
+			"strength": 0.3,
 			"angle": 0,
 			"angle_speed": 0.0349,
 			"dz": 0.5
