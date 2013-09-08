@@ -8,7 +8,6 @@ class Sounds(object):
     for i in xrange(1, 9):
       self.warnings.append(pygame.mixer.Sound(
           'data/voices/warnings/s%i.ogg' % i))
-      print self.warnings[i - 1].get_length()
 
     self.disc = []
     for i in xrange(1, 4):
@@ -38,5 +37,5 @@ class Sounds(object):
     ch = pygame.mixer.Channel(d + 1)
     if not ch.get_busy():
       pygame.mixer.Channel(d + 1).play(snd)
-    self.next_discovery = t + 0.4
+    self.next_discovery = t + 0.05
     self.next_warning = t + snd.get_length() + 5.0
