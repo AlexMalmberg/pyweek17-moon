@@ -10,7 +10,7 @@
             "ambient": 0.05,
             "strength": 0.8,
             "angle2": -2.0,
-            "angle_speed": -0.1,
+            "angle_speed": -0.08,
             "angle": -1.0,
             "angle_speed2": -0.0349,
             "dz": 1.5
@@ -27,7 +27,7 @@
             "range": 15
         },
         {
-            "position": [1124, 1250],
+            "position": [1034, 1274],
             "range": 15
         },
         {
