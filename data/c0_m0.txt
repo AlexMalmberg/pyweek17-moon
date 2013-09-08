@@ -31,14 +31,6 @@
             "range": 15
         },
         {
-            "position": [1024, 972],
-            "range": 15
-        },
-        {
-            "position": [1032, 1297],
-            "range": 15
-        },
-        {
             "position": [1504, 1457],
             "range": 15
         },
